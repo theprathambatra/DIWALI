@@ -5,10 +5,11 @@ An editable, responsive Diwali Night invitation based on the public Nightlist de
 ## Run locally
 
 ```bash
-python3 -m http.server 8080
+node scripts/build-site.mjs
+cd dist && python3 -m http.server 8080
 ```
 
-Open `http://localhost:8080`. To prepare the complete static site for publishing, run `node scripts/build-site.mjs` and deploy the generated `dist/` output. A static server does not run the pending RSVP endpoint.
+Open `http://localhost:8080`. Deploy the generated `dist/` output when publishing. A static server does not run the pending RSVP endpoint.
 
 ## Edit the invitation
 
@@ -16,7 +17,7 @@ Open `http://localhost:8080`. To prepare the complete static site for publishing
 - Replace images in `assets/` and update their paths in `content.js`. The city image is referenced in `index.html`.
 - Change the color variables and layout in `styles.css`.
 - Edit the HTML structure and form fields in `index.html`. The QR image in `assets/location-qr.svg` encodes the map URL; regenerate it when the location changes.
-- Replace the three MP3 parts in `assets/` with your own mix and update their paths and durations in `content.js`. Keep each part below the host’s 25 MiB static asset limit. `ffmpeg -c copy -f segment` can split an MP3 without re-encoding it.
+- The three MP3s are stored as 6 MiB chunks in `assets/audio-chunks/` so the complete mix fits in this repository. `node scripts/build-site.mjs` verifies their checksums and reassembles the original MP3s in `dist/assets/`. To change the mix, split the replacement MP3s into chunks, update their checksums in `scripts/build-site.mjs`, and update paths and durations in `content.js`. Each assembled MP3 must stay below the host’s 25 MiB static asset limit.
 
 The ticket tap starts the uploaded 57 minute Diwali Mix through the browser’s built-in audio player. Visitors can pause, resume, and seek through the set. It advances to the next MP3 part automatically. If a browser blocks playback or a part cannot load, the player shows a tap-to-play message. No music service or login is involved.
 
