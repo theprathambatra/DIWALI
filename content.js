@@ -33,8 +33,8 @@ window.NIGHTLIST = {
     "assets/friends-party.jpg",
     "assets/fireworks-night.jpg"
   ],
-  // Add the deployed Google Apps Script Web app URL here after it is live.
-  rsvpFormUrl: "",
+  // Hosted RSVP form writes to the private Google Sheet without guest sign-in.
+  rsvpFormUrl: "https://script.google.com/macros/s/AKfycby0QzTWU9uSHmEzj4CTj026ckNzbY6w7hrRgnutqEfTW9DTnCZgDC2x1DMOLEtx-gL0/exec",
   // Optional same-origin Worker endpoint if that bridge is deployed later.
   rsvpEndpoint: ""
 };
