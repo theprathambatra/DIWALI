@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      * { box-sizing: border-box; }
+      html, body { margin: 0; background: #0b0e1d; color: #fff; font-family: Arial, sans-serif; }
+      form { display: flex; flex-direction: column; }
+      .row { min-height: 47px; display: grid; grid-template-columns: 86px 1fr; gap: 16px; align-items: center; }
+      .row > span { color: #9eaaca; font-size: 8px; line-height: 11px; font-weight: 700; letter-spacing: .09em; }
+      input[type="text"] { width: 100%; height: 31px; border: 0; border-bottom: 1px dashed rgba(194,207,233,.35); border-radius: 0; background: transparent; color: #fff; font-size: 14px; font-weight: 600; outline: 0; }
+      input[type="text"]:focus { border-color: #82dfff; }
+      input::placeholder { color: #586177; opacity: 1; }
+      .alcohol { grid-template-columns: 86px 1fr 1fr; gap: 9px; }
+      .choice { height: 29px; border: 1px solid rgba(197,204,230,.34); border-radius: 30px; display: flex; justify-content: center; align-items: center; gap: 7px; cursor: pointer; }
+      .choice input { appearance: none; width: 8px; height: 8px; border: 1px solid #75819e; border-radius: 50%; margin: 0; }
+      .choice input:checked { background: #99e9ff; box-shadow: 0 0 7px #99e9ff; }
+      .choice span { color: #d6def2; font-size: 9px; font-weight: 800; }
+      button { width: 100%; min-height: 37px; margin-top: 5px; border: 0; border-radius: 5px; background: linear-gradient(120deg, #8de7ff, #e39af7); color: #08122a; font-size: 11px; font-weight: 800; letter-spacing: .10em; cursor: pointer; }
+      button:disabled { opacity: .6; cursor: wait; }
+      #result { min-height: 17px; margin-top: 8px; color: #c0ecff; font-size: 9px; line-height: 1.4; letter-spacing: .08em; text-align: center; }
+      .honeypot { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+    </style>
+  </head>
+  <body>
+    <form id="rsvpForm">
+      <label class="row"><span>NAME</span><input type="text" name="full_name" autocomplete="name" maxlength="80" required aria-label="Name" /></label>
+      <label class="row"><span>EMAIL / IG</span><input type="text" name="contact" placeholder="@" maxlength="120" required aria-label="Email or Instagram" /></label>
+      <div class="row alcohol" role="group" aria-label="Alcohol preference"><span>ALCOHOL?</span><label class="choice"><input type="radio" name="alcohol" value="Yes" required /><span>YES</span></label><label class="choice"><input type="radio" name="alcohol" value="No" /><span>NO</span></label></div>
+      <label class="honeypot" aria-hidden="true">Website <input name="website" type="text" tabindex="-1" autocomplete="off" /></label>
+      <button type="submit">REQUEST ACCESS</button>
+    </form>
+    <div id="result" role="status" aria-live="polite"></div>
+    <script>
+      const form = document.getElementById("rsvpForm");
+      const result = document.getElementById("result");
+      const button = form.querySelector("button");
+      let submissionId = crypto.randomUUID();
+      form.addEventListener("submit", event => {
+        event.preventDefault();
+        if (!form.reportValidity()) return;
+        const payload = Object.fromEntries(new FormData(form));
+        payload.full_name = payload.full_name.trim();
+        payload.contact = payload.contact.trim();
+        payload.submission_id = submissionId;
+        if (!payload.full_name || !payload.contact || !["Yes", "No"].includes(payload.alcohol)) return;
+        button.disabled = true;
+        result.textContent = "SAVING YOUR RSVP…";
+        google.script.run
+          .withSuccessHandler(receipt => {
+            if (receipt && receipt.ok === true) {
+              result.textContent = "REQUEST RECEIVED. SEE YOU AT DIWALI NIGHT.";
+              form.reset();
+              submissionId = crypto.randomUUID();
+            } else {
+              result.textContent = "THE REQUEST DIDN’T GO THROUGH. PLEASE TRY AGAIN.";
+            }
+            button.disabled = false;
+          })
+          .withFailureHandler(() => {
+            result.textContent = "THE REQUEST DIDN’T GO THROUGH. PLEASE TRY AGAIN.";
+            button.disabled = false;
+          })
+          .submitRsvp(payload);
+      });
+    </script>
+  </body>
+</html>

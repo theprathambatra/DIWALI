@@ -5,6 +5,8 @@
   const ticket = document.getElementById("ticket");
   const modal = document.getElementById("modalLayer");
   const form = document.getElementById("rsvpForm");
+  const rsvpFrame = document.getElementById("rsvpFrame");
+  const rsvpDirectLink = document.getElementById("rsvpDirectLink");
   const result = document.getElementById("formResult");
   const enterButton = document.getElementById("enterButton");
   const requestButton = document.getElementById("requestButton");
@@ -204,6 +206,16 @@
   });
 
   const openModal = () => {
+    if (typeof data.rsvpFormUrl === "string" &&
+        /^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec(?:\?.*)?$/.test(data.rsvpFormUrl) &&
+        !rsvpFrame.dataset.loaded) {
+      rsvpFrame.src = data.rsvpFormUrl;
+      rsvpFrame.hidden = false;
+      rsvpDirectLink.href = data.rsvpFormUrl;
+      rsvpDirectLink.hidden = false;
+      form.hidden = true;
+      rsvpFrame.dataset.loaded = "true";
+    }
     previousFocus = document.activeElement;
     modal.hidden = false;
     document.body.classList.add("modal-open");

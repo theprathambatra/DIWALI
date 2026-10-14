@@ -33,7 +33,8 @@ window.NIGHTLIST = {
     "assets/friends-party.jpg",
     "assets/fireworks-night.jpg"
   ],
-  // Add the deployed RSVP POST endpoint here once the Google Sheet bridge is live.
-  // With an empty URL, the form explains that submissions are not connected.
+  // Add the deployed Google Apps Script Web app URL here after it is live.
+  rsvpFormUrl: "",
+  // Optional same-origin Worker endpoint if that bridge is deployed later.
   rsvpEndpoint: ""
 };
